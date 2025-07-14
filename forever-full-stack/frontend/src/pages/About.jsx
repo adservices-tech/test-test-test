@@ -14,10 +14,10 @@ const About = () => {
       <div className='my-10 flex flex-col md:flex-row gap-16'>
           <img className='w-full md:max-w-[450px]' src={assets.about_img} alt="" />
           <div className='flex flex-col justify-center gap-6 md:w-2/4 text-gray-600'>
-              <p>Forever was born out of a passion for innovation and a desire to revolutionize the way people shop online. Our journey began with a simple idea: to provide a platform where customers can easily discover, explore, and purchase a wide range of products from the comfort of their homes.</p>
-              <p>Since our inception, we've worked tirelessly to curate a diverse selection of high-quality products that cater to every taste and preference. From fashion and beauty to electronics and home essentials, we offer an extensive collection sourced from trusted brands and suppliers.</p>
+              <p>At Keproduct, we believe sustainability is more than a trend — it's a responsibility. Founded with a passion for nature and craftsmanship, we specialize in eco-conscious bags, side slings, and lifestyle products made from 100% pure hemp — one of the most durable and environmentally friendly materials on Earth.</p>
+              <p>Each of our products blends timeless design with sustainable ethics, supporting a cleaner planet while offering high-quality utility. Whether you're exploring the city or the outdoors, our handcrafted pieces are designed to complement your journey — stylish, strong, and sustainable.</p>
               <b className='text-gray-800'>Our Mission</b>
-              <p>Our mission at Forever is to empower customers with choice, convenience, and confidence. We're dedicated to providing a seamless shopping experience that exceeds expectations, from browsing and ordering to delivery and beyond.</p>
+              <p>🌱 Reduce waste. Respect nature. Rethink fashion.</p>
           </div>
       </div>
 
