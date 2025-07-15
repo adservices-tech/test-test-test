@@ -15,7 +15,7 @@ const Add = ({token}) => {
    const [description, setDescription] = useState("");
    const [price, setPrice] = useState("");
    const [category, setCategory] = useState("Men");
-   const [subCategory, setSubCategory] = useState("Topwear");
+   const [subCategory, setSubCategory] = useState("Backpacks");
    const [bestseller, setBestseller] = useState(false);
    const [sizes, setSizes] = useState([]);
 
@@ -102,16 +102,19 @@ const Add = ({token}) => {
               <select onChange={(e) => setCategory(e.target.value)} className='w-full px-3 py-2'>
                   <option value="Men">Men</option>
                   <option value="Women">Women</option>
-                  <option value="Kids">Kids</option>
+                  <option value="Unisex">Unisex</option>
               </select>
             </div>
 
             <div>
               <p className='mb-2'>Sub category</p>
               <select onChange={(e) => setSubCategory(e.target.value)} className='w-full px-3 py-2'>
-                  <option value="Topwear">Topwear</option>
-                  <option value="Bottomwear">Bottomwear</option>
-                  <option value="Winterwear">Winterwear</option>
+                  <option value="Backpacks">Backpacks</option>
+                  <option value="SideSling">Side Sling & Crossbody</option>
+                  <option value="HandBags">Hand Bags</option>
+                  <option value="tote">Tote</option>
+                  <option value="pouch">Pouch</option>
+                  <option value="clutch">Clutch</option>
               </select>
             </div>
 

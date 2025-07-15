@@ -113,16 +113,19 @@ const Collection = () => {
               <input className='w-3' type="checkbox" value={'Backpacks'} onChange={toggleSubCategory}/> Backpacks
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Moneybelt'} onChange={toggleSubCategory}/> Moneybelt
+              <input className='w-3' type="checkbox" value={'SideSling'} onChange={toggleSubCategory}/> Side Sling & Crossbody
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Sideslings'} onChange={toggleSubCategory}/> Sidesliding
+              <input className='w-3' type="checkbox" value={'HandBags'} onChange={toggleSubCategory}/> Hand Bags
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Cluthers'} onChange={toggleSubCategory}/> Cluthers
+              <input className='w-3' type="checkbox" value={'tote'} onChange={toggleSubCategory}/> Tote
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Misc'} onChange={toggleSubCategory}/> Misc
+              <input className='w-3' type="checkbox" value={'pouch'} onChange={toggleSubCategory}/> Pouch
+            </p>
+            <p className='flex gap-2'>
+              <input className='w-3' type="checkbox" value={'clutch'} onChange={toggleSubCategory}/> clutch
             </p>
           </div>
         </div>
