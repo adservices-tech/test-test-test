@@ -16,6 +16,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Verify from './pages/Verify'
 import WhatsAppButton from './components/WhatsAppButton';
+import ShippingDelivery from './pages/ShippingDeliveryPage' // Add this import
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
+import CancellationRefundPolicy from './pages/CancellationRefundPolicy';
+import ScrollToTop from './components/scrollToTop';
+
 
 const App = () => {
   return (
@@ -27,7 +33,7 @@ const App = () => {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/collection' element={<Collection />} />
-        <Route path='/about' element={<About />} />
+        <Route path='/About' element={<About />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/product/:productId' element={<Product />} />
         <Route path='/cart' element={<Cart />} />
@@ -35,7 +41,13 @@ const App = () => {
         <Route path='/place-order' element={<PlaceOrder />} />
         <Route path='/orders' element={<Orders />} />
         <Route path='/verify' element={<Verify />} />
+        {/* Add the new route */}
+        <Route path='/ShippingDeliveryPage' element={<ShippingDelivery />} />
+        <Route path='/PrivacyPolicy' element={<PrivacyPolicy />} />
+        <Route path='/TermsAndConditions' element={<TermsAndConditions />} />
+        <Route path='/CancellationRefundPolicy' element={<CancellationRefundPolicy />} />
       </Routes>
+      <ScrollToTop />
       <Footer />
     </div>
   )
