@@ -1,171 +1,262 @@
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios'
+import axios from 'axios';
 
 export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
-
     const currency = '₹';
-    const delivery_fee = 0;
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
+    const delivery_fee = 50;
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
     const [cartItems, setCartItems] = useState({});
     const [products, setProducts] = useState([]);
-    const [token, setToken] = useState('')
+    const [token, setToken] = useState('');
     const navigate = useNavigate();
 
-
+    // Enhanced addToCart with notifications
     const addToCart = async (itemId, size) => {
-
         if (!size) {
-            toast.error('Select Product Size');
+            toast.error('Please select a product size');
             return;
         }
 
-        let cartData = structuredClone(cartItems);
-
-        if (cartData[itemId]) {
-            if (cartData[itemId][size]) {
-                cartData[itemId][size] += 1;
-            }
-            else {
-                cartData[itemId][size] = 1;
-            }
+        const product = products.find(p => p._id === itemId);
+        if (!product) {
+            toast.error('Product not found');
+            return;
         }
-        else {
-            cartData[itemId] = {};
-            cartData[itemId][size] = 1;
-        }
-        setCartItems(cartData);
 
+        const newCartItems = { ...cartItems };
+        
+        // Initialize if not exists
+        if (!newCartItems[itemId]) {
+            newCartItems[itemId] = {};
+        }
+
+        // Update quantity
+        const currentQty = newCartItems[itemId][size] || 0;
+        newCartItems[itemId][size] = currentQty + 1;
+        
+        setCartItems(newCartItems);
+
+        // Show success notification
+        toast.success(
+            <div className="flex items-center">
+                <img 
+                    src={product.image[0]} 
+                    alt={product.name} 
+                    className="w-10 h-10 object-cover mr-3 rounded"
+                />
+                <div>
+                    <p className="font-medium">Added to cart!</p>
+                    <p className="text-sm">{product.name} ({size})</p>
+                </div>
+            </div>,
+            {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+            }
+        );
+
+        // Sync with backend if authenticated
         if (token) {
             try {
-
-                await axios.post(backendUrl + '/api/cart/add', { itemId, size }, { headers: { token } })
-
+                await axios.post(
+                    `${backendUrl}/api/cart/add`, 
+                    { itemId, size }, 
+                    { headers: { token } }
+                );
             } catch (error) {
-                console.log(error)
-                toast.error(error.message)
+                console.error('Cart update failed:', error);
+                toast.error(error.response?.data?.message || 'Failed to update cart');
+                // Revert on error
+                setCartItems(cartItems);
             }
         }
+    };
 
-    }
-
-    const getCartCount = () => {
-        let totalCount = 0;
-        for (const items in cartItems) {
-            for (const item in cartItems[items]) {
-                try {
-                    if (cartItems[items][item] > 0) {
-                        totalCount += cartItems[items][item];
-                    }
-                } catch (error) {
-
-                }
-            }
-        }
-        return totalCount;
-    }
-
+    // Enhanced updateQuantity with notifications
     const updateQuantity = async (itemId, size, quantity) => {
+        const product = products.find(p => p._id === itemId);
+        if (!product) {
+            toast.error('Product not found');
+            return;
+        }
 
-        let cartData = structuredClone(cartItems);
+        const newCartItems = { ...cartItems };
+        const currentQty = newCartItems[itemId]?.[size] || 0;
 
-        cartData[itemId][size] = quantity;
+        // Handle removal
+        if (quantity <= 0) {
+            // Confirm removal
+            toast.warn(
+                <div>
+                    <p>Remove {product.name} from cart?</p>
+                    <div className="flex justify-end gap-2 mt-2">
+                        <button
+                            onClick={() => {
+                                const updatedCart = { ...newCartItems };
+                                delete updatedCart[itemId][size];
+                                // Remove empty product entries
+                                if (Object.keys(updatedCart[itemId]).length === 0) {
+                                    delete updatedCart[itemId];
+                                }
+                                setCartItems(updatedCart);
+                                toast.dismiss();
+                                toast.success(`${product.name} removed from cart`);
+                                syncCartWithBackend(itemId, size, 0);
+                            }}
+                            className="px-3 py-1 bg-red-500 text-white rounded text-sm"
+                        >
+                            Remove
+                        </button>
+                        <button
+                            onClick={() => toast.dismiss()}
+                            className="px-3 py-1 bg-gray-200 rounded text-sm"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>,
+                {
+                    position: "bottom-right",
+                    autoClose: false,
+                    closeOnClick: false,
+                }
+            );
+            return;
+        }
 
-        setCartItems(cartData)
+        // Update quantity
+        if (!newCartItems[itemId]) {
+            newCartItems[itemId] = {};
+        }
+        newCartItems[itemId][size] = quantity;
+        setCartItems(newCartItems);
 
+        // Show quantity change notification
+        if (quantity > currentQty) {
+            toast.success(`Added ${quantity - currentQty} more ${product.name}`);
+        } else {
+            toast.info(`Updated quantity for ${product.name}`);
+        }
+
+        // Sync with backend
+        syncCartWithBackend(itemId, size, quantity);
+    };
+
+    // Helper function for backend sync
+    const syncCartWithBackend = async (itemId, size, quantity) => {
         if (token) {
             try {
-
-                await axios.post(backendUrl + '/api/cart/update', { itemId, size, quantity }, { headers: { token } })
-
+                await axios.post(
+                    `${backendUrl}/api/cart/update`,
+                    { itemId, size, quantity },
+                    { headers: { token } }
+                );
             } catch (error) {
-                console.log(error)
-                toast.error(error.message)
+                console.error('Cart sync failed:', error);
+                toast.error(error.response?.data?.message || 'Failed to update cart');
+                // Revert on error
+                setCartItems(cartItems);
             }
         }
+    };
 
-    }
+    // Optimized cart count calculation
+    const getCartCount = () => {
+        return Object.values(cartItems).reduce((total, sizes) => {
+            return total + Object.values(sizes).reduce((sum, qty) => sum + qty, 0);
+        }, 0);
+    };
 
+    // Optimized cart amount calculation
     const getCartAmount = () => {
-        let totalAmount = 0;
-        for (const items in cartItems) {
-            let itemInfo = products.find((product) => product._id === items);
-            for (const item in cartItems[items]) {
-                try {
-                    if (cartItems[items][item] > 0) {
-                        totalAmount += itemInfo.price * cartItems[items][item];
-                    }
-                } catch (error) {
-
-                }
-            }
-        }
-        return totalAmount;
-    }
+        return Object.entries(cartItems).reduce((total, [itemId, sizes]) => {
+            const product = products.find(p => p._id === itemId);
+            if (!product) return total;
+            
+            return total + Object.entries(sizes).reduce((sum, [_, qty]) => {
+                return sum + (product.price * qty);
+            }, 0);
+        }, 0);
+    };
 
     const getProductsData = async () => {
         try {
-
-            const response = await axios.get(backendUrl + '/api/product/list')
+            const response = await axios.get(`${backendUrl}/api/product/list`);
             if (response.data.success) {
-                setProducts(response.data.products.reverse())
+                setProducts(response.data.products.reverse());
             } else {
-                toast.error(response.data.message)
+                toast.error(response.data.message);
             }
-
         } catch (error) {
-            console.log(error)
-            toast.error(error.message)
+            console.error('Failed to load products:', error);
+            toast.error(error.response?.data?.message || 'Failed to load products');
         }
-    }
+    };
 
-    const getUserCart = async ( token ) => {
+    const getUserCart = async (userToken) => {
         try {
-            
-            const response = await axios.post(backendUrl + '/api/cart/get',{},{headers:{token}})
+            const response = await axios.post(
+                `${backendUrl}/api/cart/get`,
+                {},
+                { headers: { token: userToken } }
+            );
             if (response.data.success) {
-                setCartItems(response.data.cartData)
+                setCartItems(response.data.cartData || {});
             }
         } catch (error) {
-            console.log(error)
-            toast.error(error.message)
+            console.error('Failed to load cart:', error);
+            toast.error(error.response?.data?.message || 'Failed to load cart');
         }
-    }
+    };
 
     useEffect(() => {
-        getProductsData()
-    }, [])
+        getProductsData();
+    }, []);
 
     useEffect(() => {
-        if (!token && localStorage.getItem('token')) {
-            setToken(localStorage.getItem('token'))
-            getUserCart(localStorage.getItem('token'))
+        const storedToken = localStorage.getItem('token');
+        if (storedToken && !token) {
+            setToken(storedToken);
+            getUserCart(storedToken);
+        } else if (token) {
+            getUserCart(token);
         }
-        if (token) {
-            getUserCart(token)
-        }
-    }, [token])
+    }, [token]);
 
     const value = {
-        products, currency, delivery_fee,
-        search, setSearch, showSearch, setShowSearch,
-        cartItems, addToCart,setCartItems,
-        getCartCount, updateQuantity,
-        getCartAmount, navigate, backendUrl,
-        setToken, token
-    }
+        products,
+        currency,
+        delivery_fee,
+        search,
+        setSearch,
+        showSearch,
+        setShowSearch,
+        cartItems,
+        addToCart,
+        setCartItems,
+        getCartCount,
+        updateQuantity,
+        getCartAmount,
+        navigate,
+        backendUrl,
+        setToken,
+        token
+    };
 
     return (
         <ShopContext.Provider value={value}>
             {props.children}
         </ShopContext.Provider>
-    )
-
-}
+    );
+};
 
 export default ShopContextProvider;

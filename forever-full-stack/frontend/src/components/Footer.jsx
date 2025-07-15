@@ -22,11 +22,11 @@ const Footer = () => {
           <p className='text-xl font-medium mb-5'>COMPANY</p>
           <ul className='flex flex-col gap-1 text-gray-600'>
             <li><Link to="/" className="hover:underline">Home</Link></li>
-            <li><Link to="/about" className="hover:underline">About us</Link></li>
-            <li><Link to="/shipping-delivery" className="hover:underline">ShippingDelivery</Link></li>
-            <li><Link to="/privacy-policy" className="hover:underline">Privacy policy</Link></li>
-            <li><Link to="/Terms-And-Conditions" className="hover:underline">Terms&Conditions</Link></li>
-            <li><Link to="/Cancellation-Refund" className="hover:underline">Cancellation Refund</Link></li>
+            <li><Link to="/About" className="hover:underline">About us</Link></li>
+            <Link to="/ShippingDeliveryPage" className="hover:underline">Shipping Information</Link>
+            <li><Link to="/PrivacyPolicy" className="hover:underline">Privacy policy</Link></li>
+            <li><Link to="/TermsAndConditions" className="hover:underline">Terms & Conditions</Link></li>
+            <li><Link to="/CancellationRefundPolicy" className="hover:underline">Cancellation Refund</Link></li>
           </ul>
         </div>
 

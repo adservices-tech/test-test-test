@@ -19,7 +19,7 @@ const Contact = () => {
           <p className=' text-gray-500'>Tel: +91 1146056588 <br /> Email: service@keproduct.com</p>
           <p className='font-semibold text-xl text-gray-600'>Careers at Ke Product</p>
           <p className=' text-gray-500'>Learn more about our teams and job openings.</p>
-          <button className='border border-black px-8 py-4 text-sm hover:bg-black hover:text-white transition-all duration-500'> Currently looking for an Accountant. Do contact us on +91 9899157782</button>
+          <button className='border border-black px-8 py-4 text-sm hover:bg-black hover:text-white transition-all duration-500'> Currently looking for an Accountant. Do contact us on +91 88828 94991</button>
         </div>
       </div>
 
