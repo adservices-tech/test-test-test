@@ -12,6 +12,10 @@ const Footer = () => {
           <p className='w-full md:w-2/3 text-gray-600'>
             At Keproduct, we believe sustainability is more than a trend — it's a responsibility. Founded with a passion for nature and craftsmanship, we specialize in eco-conscious bags, side slings, and lifestyle products made from 100% pure hemp — one of the most durable and environmentally friendly materials on Earth.
           </p>
+          <div>
+        <p className='py-5 text-lg'>Our Shipping Partners</p>
+          <img src={assets.shiping_partner} className='w-90 mb-5' alt="" />
+        </div>
         </div>
 
         <div>
