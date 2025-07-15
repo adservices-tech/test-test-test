@@ -15,23 +15,37 @@
   z-index: 1000;
   transition: all 0.3s ease;
   animation: pulse 2s infinite;
+  border: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent; /* Removes tap highlight on mobile */
 }
 
-.whatsapp-button:hover {
+/* Hover effects for non-touch devices */
+@media (hover: hover) {
+  .whatsapp-button:hover {
+    background-color: #128C7E;
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+  }
+}
+
+/* Active/tap state for all devices */
+.whatsapp-button:active {
+  transform: scale(0.95);
   background-color: #128C7E;
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
 }
 
 .whatsapp-icon {
   font-size: 28px;
   margin-right: 10px;
+  flex-shrink: 0; /* Prevents icon from shrinking on small screens */
 }
 
 .whatsapp-text {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-weight: 600;
   font-size: 16px;
+  white-space: nowrap; /* Prevents text from wrapping */
 }
 
 @keyframes pulse {
@@ -46,7 +60,7 @@
   }
 }
 
-/* Responsive adjustments */
+/* Tablet and smaller screens */
 @media (max-width: 768px) {
   .whatsapp-button {
     bottom: 20px;
@@ -61,5 +75,38 @@
   
   .whatsapp-text {
     font-size: 14px;
+  }
+}
+
+/* Mobile-specific adjustments (small phones) */
+@media (max-width: 480px) {
+  .whatsapp-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%; /* Perfect circle */
+    padding: 0;
+  }
+  
+  .whatsapp-text {
+    display: none; /* Hide text on very small screens */
+  }
+  
+  .whatsapp-icon {
+    margin-right: 0;
+    font-size: 28px; /* Slightly larger icon for better touch target */
+  }
+}
+
+/* Extra small devices (e.g., iPhone 5/SE) */
+@media (max-width: 320px) {
+  .whatsapp-button {
+    width: 56px;
+    height: 56px;
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .whatsapp-icon {
+    font-size: 26px;
   }
 }

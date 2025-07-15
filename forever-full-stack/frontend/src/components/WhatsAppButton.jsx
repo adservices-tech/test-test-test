@@ -3,12 +3,20 @@ import { FaWhatsapp } from "react-icons/fa";
 import "./WhatsAppButton.css";
 
 const WhatsAppButton = () => {
-  const phoneNumber = "+918882894991"; // Replace with your WhatsApp number
+  // Remove all non-digit characters from phone number
+  const phoneNumber = "918882894991"; // Note: Removed the '+' sign
   const message = "Hello, I have a question!"; // Optional pre-filled message
 
   const handleClick = () => {
+    // Create the WhatsApp URL
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
+    
+    // For mobile devices, use window.location.href instead of window.open
+    if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      window.location.href = url;
+    } else {
+      window.open(url, "_blank");
+    }
   };
 
   return (
