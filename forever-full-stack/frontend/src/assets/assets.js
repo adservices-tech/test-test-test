@@ -1,3 +1,7 @@
+import fedex_logo from './fedex_logo.png'
+import dhl_logo from './dhl_logo.png'
+import aramex_logo from './aramex_logo.png'
+import shiping_partner from './shiping_partner.png'
 import p_img1 from './p_img1.png'
 import p_img2_1 from './p_img2_1.png'
 import p_img2_2 from './p_img2_2.png'
@@ -75,6 +79,10 @@ import stripe_logo from './stripe_logo.png'
 import cross_icon from './cross_icon.png'
 
 export const assets = {
+    fedex_logo,
+    aramex_logo,
+    dhl_logo,
+    shiping_partner,
     logo,
     hero_img,
     cart_icon,
