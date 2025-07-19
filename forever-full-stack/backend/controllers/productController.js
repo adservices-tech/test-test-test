@@ -1,89 +1,279 @@
-import { v2 as cloudinary } from "cloudinary"
-import productModel from "../models/productModel.js"
+import { v2 as cloudinary } from "cloudinary";
+import productModel from "../models/productModel.js";
 
-// function for add product
+// Add new product
 const addProduct = async (req, res) => {
     try {
+        const { name, description, price, category, subCategory, sizes, bestseller } = req.body;
 
-        const { name, description, price, category, subCategory, sizes, bestseller } = req.body
+        // Validate required fields
+        if (!name || !description || !price || !category || !subCategory || !sizes) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields"
+            });
+        }
 
-        const image1 = req.files.image1 && req.files.image1[0]
-        const image2 = req.files.image2 && req.files.image2[0]
-        const image3 = req.files.image3 && req.files.image3[0]
-        const image4 = req.files.image4 && req.files.image4[0]
+        // Handle image uploads
+        const images = [];
+        for (let i = 1; i <= 4; i++) {
+            if (req.files[`image${i}`] && req.files[`image${i}`][0]) {
+                images.push(req.files[`image${i}`][0]);
+            }
+        }
 
-        const images = [image1, image2, image3, image4].filter((item) => item !== undefined)
+        if (images.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "At least one image is required"
+            });
+        }
 
-        let imagesUrl = await Promise.all(
+        const imagesUrl = await Promise.all(
             images.map(async (item) => {
-                let result = await cloudinary.uploader.upload(item.path, { resource_type: 'image' });
-                return result.secure_url
+                const result = await cloudinary.uploader.upload(item.path, {
+                    resource_type: 'image',
+                    folder: 'products'
+                });
+                return result.secure_url;
             })
-        )
+        );
 
+        // Create product data
         const productData = {
             name,
             description,
             category,
             price: Number(price),
             subCategory,
-            bestseller: bestseller === "true" ? true : false,
+            bestseller: bestseller === "true",
             sizes: JSON.parse(sizes),
             image: imagesUrl,
-            date: Date.now()
-        }
-
-        console.log(productData);
+            isListed: true // Default to listed
+        };
 
         const product = new productModel(productData);
-        await product.save()
+        await product.save();
 
-        res.json({ success: true, message: "Product Added" })
+        res.status(201).json({
+            success: true,
+            message: "Product added successfully",
+            product
+        });
 
     } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
+        console.error("Error adding product:", error);
+        res.status(500).json({
+            success: false,
+            message: error.message || "Failed to add product"
+        });
     }
-}
+};
 
-// function for list product
+// List all products with filters
 const listProducts = async (req, res) => {
     try {
+        const { search, page = 1, limit = 10, status } = req.query;
+        const skip = (page - 1) * limit;
+
+        // Build query
+        const query = {};
         
-        const products = await productModel.find({});
-        res.json({success:true,products})
+        // Search functionality
+        if (search) {
+            query.$text = { $search: search };
+        }
+
+        // Status filter
+        if (status === 'listed') {
+            query.isListed = true;
+        } else if (status === 'delisted') {
+            query.isListed = false;
+        }
+
+        const [products, total] = await Promise.all([
+            productModel.find(query)
+                .skip(skip)
+                .limit(Number(limit))
+                .sort({ createdAt: -1 }),
+            productModel.countDocuments(query)
+        ]);
+
+        res.json({
+            success: true,
+            products,
+            total,
+            page: Number(page),
+            pages: Math.ceil(total / limit)
+        });
 
     } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
+        console.error("Error listing products:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch products"
+        });
     }
-}
+};
 
-// function for removing product
+// Remove product
 const removeProduct = async (req, res) => {
     try {
-        
-        await productModel.findByIdAndDelete(req.body.id)
-        res.json({success:true,message:"Product Removed"})
+        const { id } = req.body;
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "Product ID is required"
+            });
+        }
+
+        const product = await productModel.findByIdAndDelete(id);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        // Optionally: Delete images from Cloudinary
+        // await Promise.all(product.image.map(url => cloudinary.uploader.destroy(url)));
+
+        res.json({
+            success: true,
+            message: "Product removed successfully"
+        });
 
     } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
+        console.error("Error removing product:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to remove product"
+        });
     }
-}
+};
 
-// function for single product info
+// Get single product
 const singleProduct = async (req, res) => {
     try {
-        
-        const { productId } = req.body
-        const product = await productModel.findById(productId)
-        res.json({success:true,product})
+        const { productId } = req.body;
+
+        if (!productId) {
+            return res.status(400).json({
+                success: false,
+                message: "Product ID is required"
+            });
+        }
+
+        const product = await productModel.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            product
+        });
 
     } catch (error) {
-        console.log(error)
-        res.json({ success: false, message: error.message })
+        console.error("Error fetching product:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch product"
+        });
     }
-}
+};
 
-export { listProducts, addProduct, removeProduct, singleProduct }
+// Toggle product listing status
+const toggleListingStatus = async (req, res) => {
+    try {
+        const { id, status } = req.body;
+
+        if (!id || typeof status !== 'boolean') {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid request data"
+            });
+        }
+
+        const product = await productModel.findByIdAndUpdate(
+            id,
+            { isListed: status },
+            { new: true }
+        );
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: `Product ${status ? 'listed' : 'delisted'} successfully`,
+            product
+        });
+
+    } catch (error) {
+        console.error("Error toggling product status:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update product status"
+        });
+    }
+};
+
+// Update product price
+const updateProductPrice = async (req, res) => {
+    try {
+        const { id, price } = req.body;
+
+        if (!id || isNaN(price) || price <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid price value"
+            });
+        }
+
+        const product = await productModel.findByIdAndUpdate(
+            id,
+            { price: Number(price) },
+            { new: true }
+        );
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Price updated successfully",
+            product
+        });
+
+    } catch (error) {
+        console.error("Error updating product price:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update price"
+        });
+    }
+};
+
+export { 
+    listProducts, 
+    addProduct, 
+    removeProduct, 
+    singleProduct,
+    toggleListingStatus,
+    updateProductPrice
+};

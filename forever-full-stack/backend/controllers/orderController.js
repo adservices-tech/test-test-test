@@ -185,21 +185,55 @@ const verifyRazorpay = async (req,res) => {
     }
 }
 
-
-// All Orders data for Admin Panel
-const allOrders = async (req,res) => {
-
+// All Orders data for Admin Panel (only successful payments)
+const allOrders = async (req, res) => {
     try {
-        
-        const orders = await orderModel.find({})
-        res.json({success:true,orders})
+        // Fetch only COD orders OR Razorpay orders with payment:true
+        const orders = await orderModel.find({
+            $or: [
+                { paymentMethod: "COD" },
+                { paymentMethod: "Razorpay", payment: true }
+            ]
+        });
 
+        res.json({ success: true, orders });
     } catch (error) {
-        console.log(error)
-        res.json({success:false,message:error.message})
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// Cancel order controller
+const cancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+
+    const order = await orderModel.findById(orderId);
+
+    if (!order) {
+      return res.json({ success: false, message: 'Order not found' });
     }
 
-}
+    if (order.status === 'Delivered' || order.status === 'Cancelled') {
+      return res.json({ success: false, message: 'Order cannot be cancelled' });
+    }
+
+    order.status = 'Cancelled';
+    await order.save();
+
+    return res.json({ success: true, message: 'Order cancelled successfully' });
+
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export {
+  // other exports
+  cancelOrder,
+};
+
 
 // User Order Data For Forntend
 const userOrders = async (req,res) => {
