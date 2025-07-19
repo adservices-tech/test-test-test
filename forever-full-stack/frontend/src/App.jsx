@@ -21,6 +21,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 import CancellationRefundPolicy from './pages/CancellationRefundPolicy';
 import ScrollToTop from './components/scrollToTop';
+import Profile from './pages/Profile';
 
 
 const App = () => {
@@ -37,6 +38,7 @@ const App = () => {
         <Route path='/contact' element={<Contact />} />
         <Route path='/product/:productId' element={<Product />} />
         <Route path='/cart' element={<Cart />} />
+        <Route path='/profile' element={<Profile />} />
         <Route path='/login' element={<Login />} />
         <Route path='/place-order' element={<PlaceOrder />} />
         <Route path='/orders' element={<Orders />} />
@@ -46,6 +48,7 @@ const App = () => {
         <Route path='/PrivacyPolicy' element={<PrivacyPolicy />} />
         <Route path='/TermsAndConditions' element={<TermsAndConditions />} />
         <Route path='/CancellationRefundPolicy' element={<CancellationRefundPolicy />} />
+
       </Routes>
       <ScrollToTop />
       <Footer />
