@@ -48,7 +48,7 @@ const TermsAndConditions = () => {
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">5. Returns and Refunds</h2>
         <ul className="list-disc pl-6 space-y-2">
-          <li>Returns must be made within 14 days of delivery</li>
+          <li>Returns must be made within 5 days of delivery</li>
           <li>Products must be unused and in original packaging</li>
           <li>Refunds will be processed to the original payment method</li>
           <li>Shipping costs are non-refundable unless the return is due to our error</li>

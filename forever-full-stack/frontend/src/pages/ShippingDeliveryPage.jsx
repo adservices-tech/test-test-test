@@ -10,13 +10,12 @@ const ShippingDeliveryPage = () => {
       overnight: { time: 'Next business day', price: '₹250', available: 'Metro cities only' },
       notes: [
         'Cash on Delivery available for most locations',
-        'Free shipping on orders over ₹1000',
         'Rural areas may experience 1-2 day delays'
       ]
     },
     International: {
-      standard: { time: '7-14 business days', price: '₹800' },
-      express: { time: '3-5 business days', price: '₹1500' },
+      standard: { time: '7-14 business days', price: '₹2200' },
+      express: { time: '3-5 business days', price: '₹2000' },
       overnight: { time: 'Not available', price: '-' },
       notes: [
         'Customs duties may apply for international orders',
