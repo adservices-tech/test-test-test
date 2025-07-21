@@ -34,7 +34,7 @@ const CancellationRefundPolicy = () => {
           <div className="bg-gray-50 p-4 rounded-lg">
             <h3 className="text-lg font-medium mb-2">Eligibility</h3>
             <ul className="list-disc pl-6 space-y-1">
-              <li>Items must be returned within 14 days of delivery</li>
+              <li>Items must be returned within 5 days of delivery</li>
               <li>Products must be unused, in original packaging with all tags attached</li>
               <li>Certain items are non-returnable (e.g., perishables, personalized items)</li>
             </ul>
