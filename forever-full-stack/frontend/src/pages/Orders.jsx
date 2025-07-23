@@ -9,21 +9,24 @@ const Orders = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
 
-  const loadOrders = async () => {
-    if (!token) return;
-    setRefreshing(true);
-    try {
-      const res = await axios.post(backendUrl + '/api/order/userorders', {}, { headers: { token } });
-      if (res.data.success) {
-        setOrders(res.data.orders.reverse());
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to load orders');
-    } finally {
-      setTimeout(() => setRefreshing(false), 2000);
+const loadOrders = async () => {
+  if (!token) return;
+  setRefreshing(true);
+  try {
+    const res = await axios.post(backendUrl + '/api/order/userorders', {}, { headers: { token } });
+    if (res.data.success) {
+      const filteredOrders = res.data.orders.filter(order =>
+        order.paymentMethod === 'COD' || (order.paymentMethod === 'Razorpay' && order.payment === true)
+      );
+      setOrders(filteredOrders.reverse());
     }
-  };
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to load orders');
+  } finally {
+    setTimeout(() => setRefreshing(false), 2000);
+  }
+};
 
   useEffect(() => {
     loadOrders();
