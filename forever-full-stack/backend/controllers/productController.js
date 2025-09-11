@@ -73,7 +73,7 @@ const addProduct = async (req, res) => {
 // List all products with filters
 const listProducts = async (req, res) => {
     try {
-        const { search, page = 1, limit = 10, status } = req.query;
+        const { search, page = 1, limit = 100, status } = req.query;
         const skip = (page - 1) * limit;
 
         // Build query
